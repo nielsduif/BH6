@@ -295,7 +295,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 424304141}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -367,12 +367,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   childScale: 0.5
-  maxDepth: 3
+  maxDepth: 5
   material: {fileID: 2100000, guid: d69edc363c7c5ab448e53e9285ef0a34, type: 2}
   meshes:
-  - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  - {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   - {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  spawnProb: 0.7
+  maxRotationSpeed: 40
+  maxTwist: 50
 --- !u!1 &1621662089
 GameObject:
   m_ObjectHideFlags: 0
