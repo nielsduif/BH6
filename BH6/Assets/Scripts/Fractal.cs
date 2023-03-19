@@ -18,29 +18,38 @@ public class Fractal : MonoBehaviour
     [SerializeField]
     Mesh[] meshes;
 
+    [SerializeField]
+    float spawnProb = .7f;
+
+    [SerializeField]
+    float maxRotationSpeed = 60;
+    float rotationSpeed;
+
+    [SerializeField]
+    float maxTwist = 20;
+
     static Vector3[] childDir =
     {
         Vector3.up,
         Vector3.right,
         Vector3.left,
-        Vector3.down,
         Vector3.forward,
         Vector3.back
     };
 
     static Quaternion[] childOri =
     {
-        Quaternion.Euler(0,0,0),
+        Quaternion.identity,
         Quaternion.Euler(0,0,-90),
         Quaternion.Euler(0,0,90),
-        Quaternion.Euler(0,0,0),
-        Quaternion.Euler(90f, 0f, 0f),
-        Quaternion.Euler(-90f, 0f, 0f)
-
+        Quaternion.Euler(90, 0, 0),
+        Quaternion.Euler(-90, 0, 0),
     };
 
     private void Start()
     {
+        rotationSpeed = Random.Range(-maxRotationSpeed, maxRotationSpeed);
+        transform.Rotate(Random.Range(-maxTwist, maxTwist), 0, 0);
         if (materials == null)
         {
             InitializeMaterials();
@@ -53,11 +62,19 @@ public class Fractal : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        transform.Rotate(0, rotationSpeed * Time.deltaTime, 0);
+    }
+
     void CreateChildren()
     {
         for (int i = 0; i < childDir.Length; i++)
         {
-            new GameObject("FC").AddComponent<Fractal>().Instantiate(this, i);
+            if (Random.value < spawnProb)
+            {
+                new GameObject("FC").AddComponent<Fractal>().Instantiate(this, i);
+            }
         }
     }
 
@@ -69,6 +86,9 @@ public class Fractal : MonoBehaviour
         depth = _parent.depth + 1;
         childScale = _parent.childScale;
         transform.parent = _parent.transform;
+        spawnProb = _parent.spawnProb;
+        maxRotationSpeed = _parent.maxRotationSpeed;
+        maxTwist = _parent.maxTwist;
         transform.localScale = Vector3.one * childScale;
         transform.localPosition = childDir[_index] * (.5f + .5f * childScale);
         transform.localRotation = childOri[_index];
