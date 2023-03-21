@@ -412,7 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab37b6dc67ca286418e0e2c8e18980aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iterations: 999999
+  iterations: 999
   up: 119
   down: 115
   left: 97
