@@ -65,6 +65,18 @@ Shader "Unlit/Raymarch"
                 return dO;
             }
 
+            //Calculate normal
+            float3 GetNormal(float3 p){
+                //epsilon
+                float2 e = float2(.02, 0);
+                float3 n = GetDist(p) - float3(
+                    GetDist(p - e.xyy),
+                    GetDist(p - e.yxy),
+                    GetDist(p - e.yyx)
+                );
+                return normalize(n);
+            }
+
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = i.uv - .5f;
@@ -75,7 +87,9 @@ Shader "Unlit/Raymarch"
                 fixed4 col = 0;
 
                 if(d < MAX_DIST){
-                    col.r = 1;
+                    float3 p = ro + rd * d;
+                    float3 n = GetNormal(p);
+                    col.rgb = n;
                 }
                 return col;
             }
