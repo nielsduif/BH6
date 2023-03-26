@@ -30,8 +30,9 @@ Shader "Unlit/Raymarch"
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
+                float3 ro : TEXCOORD1;
+                float3 hitPos : TEXCOORD2;
             };
 
             sampler2D _MainTex;
@@ -42,6 +43,14 @@ Shader "Unlit/Raymarch"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+
+                //world space
+                // o.ro = _WorldSpaceCameraPos;
+                // o.hitPos = mul(unity_ObjectToWorld, v.vertex);
+
+                //object space with homogeneous coordinates
+                o.ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1));
+                o.hitPos = v.vertex;
                 return o;
             }
 
@@ -52,7 +61,7 @@ Shader "Unlit/Raymarch"
                 d = length(p) - .5; 
 
                 //torus
-                d = length(float2(length(p.xy) - .5, p.z)) - .1;
+                d = length(float2(length(p.xz) - .5, p.y)) - .1;
 
                 return d;
             }
@@ -89,20 +98,35 @@ Shader "Unlit/Raymarch"
                 float2 uv = i.uv - .5f;
 
                 //origin
-                float3 ro = float3(0, 0, -3);
+                // float3 ro = float3(0, 0, -3);
+                float3 ro = i.ro;
 
                 //direction
-                float3 rd = normalize(float3(uv.x, uv.y, 1));
+                // float3 rd = normalize(float3(uv.x, uv.y, 1));
+                float3 rd = normalize(i.hitPos - ro);
 
                 float d = Raymarch(ro, rd);
+
+                //texture
+                fixed4 tex = tex2D(_MainTex, i.uv);
+
                 fixed4 col = 0;
+                
+                //mask
+                float m = dot(uv, uv);
 
                 //coloring of hits
                 if(d < MAX_DIST){
                     float3 p = ro + rd * d;
                     float3 n = GetNormal(p);
                     col.rgb = n;
+                    }else{
+                    //don't render pixel
+                    // discard;
                 }
+
+                col = lerp(col, tex, smoothstep(.1, .2, m));
+
                 return col;
             }
             ENDCG
