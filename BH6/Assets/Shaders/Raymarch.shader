@@ -17,9 +17,9 @@ Shader "Unlit/Raymarch"
 
             #include "UnityCG.cginc"
 
-            #define MAX_STEPS 100;
-            #define MAX_DIST 100;
-            #define SURF_DIST .001;
+            #define MAX_STEPS 100
+            #define MAX_DIST 100
+            #define SURF_DIST .001 
 
             struct appdata
             {
@@ -45,22 +45,21 @@ Shader "Unlit/Raymarch"
                 return o;
             }
 
-            //Return distance from point p to scene
-            float GetDist(float3 p) {
-                float d = length(p) - .5f;
-
+            //Returns distsance from point p to the scene
+            float GetDist(float3 p){
+                float d = length(p) - .5;
                 return d;
             }
 
-            //Return distance to the scene, depth along viewingray
-            float Raymarch(float3 ro, float3 rd) {
+            //Returns the distance to the scene along depth of the viewing ray
+            float Raymarch(float3 ro, float3 rd){
                 float dO = 0;
                 float dS;
-                for (int i = 0; i < MAX_STEPS; i++) {
+                for(int i = 0; i < MAX_STEPS; i++){
                     float3 p = ro + dO * rd;
                     dS = GetDist(p);
                     dO += dS;
-                    if (dS < SURF_DIST || dO > MAX_DIST) break;
+                    if(dS < SURF_DIST || dO > MAX_DIST) break;
                 }
 
                 return dO;
@@ -74,11 +73,10 @@ Shader "Unlit/Raymarch"
 
                 float d = Raymarch(ro, rd);
                 fixed4 col = 0;
-                
+
                 if(d < MAX_DIST){
                     col.r = 1;
                 }
-
                 return col;
             }
             ENDCG
