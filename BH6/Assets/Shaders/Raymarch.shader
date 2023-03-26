@@ -47,7 +47,13 @@ Shader "Unlit/Raymarch"
 
             //Returns distsance from point p to the scene
             float GetDist(float3 p){
-                float d = length(p) - .5;
+                float d;
+                //sphere
+                d = length(p) - .5; 
+
+                //torus
+                d = length(float2(length(p.xy) - .5, p.z)) - .1;
+
                 return d;
             }
 
@@ -70,22 +76,28 @@ Shader "Unlit/Raymarch"
                 //epsilon
                 float2 e = float2(.02, 0);
                 float3 n = GetDist(p) - float3(
-                    GetDist(p - e.xyy),
-                    GetDist(p - e.yxy),
-                    GetDist(p - e.yyx)
+                GetDist(p - e.xyy),
+                GetDist(p - e.yxy),
+                GetDist(p - e.yyx)
                 );
                 return normalize(n);
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
+                //pivot
                 float2 uv = i.uv - .5f;
+
+                //origin
                 float3 ro = float3(0, 0, -3);
+
+                //direction
                 float3 rd = normalize(float3(uv.x, uv.y, 1));
 
                 float d = Raymarch(ro, rd);
                 fixed4 col = 0;
 
+                //coloring of hits
                 if(d < MAX_DIST){
                     float3 p = ro + rd * d;
                     float3 n = GetNormal(p);
