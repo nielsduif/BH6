@@ -5,26 +5,19 @@ using UnityEngine;
 public class CameraForward : MonoBehaviour
 {
     [SerializeField]
-    KeyCode forwardKey = KeyCode.Mouse0;
+    KeyCode forwardKey = KeyCode.Mouse0, backwardKey = KeyCode.Mouse1;
 
     [SerializeField]
-    int speed = 1;
-
-    private void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-    }
+    float speed = 1;
 
     void Update()
     {
-        if (Input.GetKey(forwardKey))
-        {
-            MoveForward();
-        }
+        Vector3 _dir = Input.GetKey(forwardKey) ? transform.forward : Input.GetKey(backwardKey) ? -transform.forward : Vector3.zero;
+        MoveForward(_dir);
     }
 
-    void MoveForward()
+    void MoveForward(Vector3 _dir)
     {
-        transform.position += Vector3.forward * Time.deltaTime * speed;
+        transform.localPosition += _dir * Time.deltaTime * speed;
     }
 }

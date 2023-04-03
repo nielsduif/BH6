@@ -5,7 +5,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 		_MainTex ("Texture", 2D) = "white" {}
 
 		//mandelbulb
-		_Exponent ("Exponent", Range(0, 50)) = 1
+		_Exponent ("Exponent", Range(2, 50)) = 1
 		_Iterations ("Iterations", Range(1, 50)) = 50
 
 		//raymarch
@@ -136,15 +136,9 @@ Shader "Unlit/Raymarch Mandelbulb"
 				return length(float2(length(p.xz) - ic, p.y)) - r;
 			}
 
-			float MandelBulb(float3 p){
-
-			}
-
 			//Returns distsance from point p to the scene
 			float GetDist(float3 p){
 				float d;
-
-				//d = Sphere(p, 1);
 
 				d = Mandelbulb(p);		
 
@@ -208,6 +202,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 
 					} else {
 					//don't render pixel
+
 					discard;
 				}
 
