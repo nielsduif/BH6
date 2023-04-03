@@ -3,10 +3,20 @@ Shader "Unlit/Raymarch Mandelbulb"
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+
+		//mandelbulb
+		_Exponent ("Exponent", Range(0, 50)) = 1
+		_Iterations ("Iterations", Range(1, 50)) = 50
+
+		//raymarch
+		_MaxSteps ("Max Steps", int) = 100
+		_MaxDist ("Max Distance", int) = 100
+		_SurfDist ("Surface Distance", int) = .001
 	}
+	
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType" = "Opaque" }
 		LOD 100
 
 		Pass
@@ -17,9 +27,6 @@ Shader "Unlit/Raymarch Mandelbulb"
 
 			#include "UnityCG.cginc"
 
-			#define MAX_STEPS 50
-			#define MAX_DIST 50
-			#define SURF_DIST .001
 
 			struct appdata
 			{
@@ -37,6 +44,13 @@ Shader "Unlit/Raymarch Mandelbulb"
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
+
+			float _Exponent;
+			float _Iterations;
+
+			int _MaxSteps;
+			int _MaxDist;
+			int _SurfDist;
 
 			v2f vert (appdata v)
 			{
@@ -75,10 +89,9 @@ Shader "Unlit/Raymarch Mandelbulb"
 				const float delta = 2;	
 				
 				float3 p = c;
-				float dr = 2.0, r = 1.0;
+				float dr = 3, r = 10;
 
-				int ii;
-				for(ii = 0; ii < 50; ii++)
+				for(int i = 0; i < _Iterations; i++)
 				{			
 					// equation used: f(p) = p^_Exponent + c starting with p = 0			
 
@@ -86,14 +99,13 @@ Shader "Unlit/Raymarch Mandelbulb"
 					float theta, psi;
 					cartesian_to_polar(p, r, theta, psi);
 
-					float exponent = 1;
 					// rate of change of points in the set
-					dr = exponent * pow(r, exponent - 1) * dr + 1.0;
+					dr = _Exponent * pow(r, _Exponent - 1) * dr + 1.0;
 
 					// find p ^ .5
-					r = pow(r, exponent);
-					theta *= exponent;
-					psi *= exponent;
+					r = pow(r, _Exponent);
+					theta *= _Exponent;
+					psi *= _Exponent;
 
 					// convert to cartesian coordinates
 					polar_to_cartesian(r, theta, psi, p);
@@ -124,13 +136,15 @@ Shader "Unlit/Raymarch Mandelbulb"
 				return length(float2(length(p.xz) - ic, p.y)) - r;
 			}
 
-			float MandelBulb(float3 p, ){
-				float r = sqrt()
+			float MandelBulb(float3 p){
+
 			}
 
 			//Returns distsance from point p to the scene
 			float GetDist(float3 p){
 				float d;
+
+				//d = Sphere(p, 1);
 
 				d = Mandelbulb(p);		
 
@@ -140,11 +154,11 @@ Shader "Unlit/Raymarch Mandelbulb"
 			//Returns the distance to the scene along depth of the viewing ray
 			float Raymarch(float3 ro, float3 rd){
 				float dO = 0, dS;
-				for(int i = 0; i < MAX_STEPS; i++){
+				for(int i = 0; i < _MaxSteps; i++){
 					float3 p = ro + dO * rd;
 					dS = GetDist(p);
 					dO += dS;
-					if(dS < SURF_DIST || dO > MAX_DIST) break;
+					if(dS < _SurfDist || dO > _MaxDist) break;
 				}
 
 				return dO;
@@ -186,7 +200,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 				//float m = dot(uv, uv);
 
 				//coloring of hits
-				if(d < MAX_DIST){
+				if(d < _MaxDist){
 					float3 p = ro + rd * d;
 					float3 n = GetNormal(p);
 
