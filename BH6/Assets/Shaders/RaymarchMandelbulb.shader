@@ -17,9 +17,9 @@ Shader "Unlit/Raymarch Mandelbulb"
 
 			#include "UnityCG.cginc"
 
-			#define MAX_STEPS 100
-			#define MAX_DIST 100
-			#define SURF_DIST .001 
+			#define MAX_STEPS 50
+			#define MAX_DIST 50
+			#define SURF_DIST .001
 
 			struct appdata
 			{
@@ -51,12 +51,10 @@ Shader "Unlit/Raymarch Mandelbulb"
 				//object space with homogeneous coordinates
 				// o.ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1));
 				// o.hitPos = v.vertex;
+				
 				return o;
 			}
 
-			// theta -- angle vector makes with the XY plane
-			// psi -- angle the projected vector on the XY plane makes with the X axis
-			// note: this might not be the usual convention
 			inline void cartesian_to_polar(float3 p, out float r, out float theta, out float psi)
 			{
 				r = length(p);
@@ -65,10 +63,6 @@ Shader "Unlit/Raymarch Mandelbulb"
 				psi	= atan(p.y / p.x); // angle of xy-projected vector with X axis
 			}
 
-
-			// theta -- angle vector makes with the XY plane
-			// psi -- angle the projected vector on the XY plane makes with the X axis
-			// note: this might not be the usual convention	
 			inline void polar_to_cartesian(float r, float theta, float psi, out float3 p)
 			{
 				p.x = r * cos(theta) * cos(psi);
@@ -84,7 +78,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 				float dr = 2.0, r = 1.0;
 
 				int ii;
-				for(ii = 0; ii < 10; ii++)
+				for(ii = 0; ii < 50; ii++)
 				{			
 					// equation used: f(p) = p^_Exponent + c starting with p = 0			
 
@@ -92,13 +86,14 @@ Shader "Unlit/Raymarch Mandelbulb"
 					float theta, psi;
 					cartesian_to_polar(p, r, theta, psi);
 
+					float exponent = 1;
 					// rate of change of points in the set
-					dr = .5 * pow(r, .5 - 1) *dr + 1.0;
+					dr = exponent * pow(r, exponent - 1) * dr + 1.0;
 
 					// find p ^ .5
-					r = pow(r,.5);
-					theta *= .5;
-					psi *= .5;
+					r = pow(r, exponent);
+					theta *= exponent;
+					psi *= exponent;
 
 					// convert to cartesian coordinates
 					polar_to_cartesian(r, theta, psi, p);
@@ -116,45 +111,26 @@ Shader "Unlit/Raymarch Mandelbulb"
 				return log(r) * r / dr; // Greens formula
 			}
 
+			float Sphere(float3 p, float r){
+				return length(p) - r;
+			}
+
+			float Box(float3 p, float w){
+				float3 d = abs(p) - w;
+				return min(max(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0));
+			}
+
+			float Torus(float3 p, float ic, float r){
+				return length(float2(length(p.xz) - ic, p.y)) - r;
+			}
+
+			float MandelBulb(float3 p, ){
+				float r = sqrt()
+			}
+
 			//Returns distsance from point p to the scene
 			float GetDist(float3 p){
 				float d;
-				//sphere
-				//d = length(p) - .5; 
-
-				//torus
-				//d = length(float2(length(p.xz) - .5, p.y)) - .1;
-
-				// int n = 8;
-				// int maxIterations = 10;
-				// int iteration = 0;
-				// float3 zeta;
-				// while(true){
-					// 	float r = sqrt(zeta.x * zeta.x + zeta.y * zeta.y + zeta.z * zeta.z);
-					// 	float theta = atan2(sqrt(zeta.x * zeta.x + zeta.y * zeta.y), zeta.z);
-					// 	float phi = atan2(zeta.y, zeta.z);
-
-					// 	float3 c = float3(r, theta, phi);
-
-					// 	float newx = pow(c.x, n) * sin(c.y * n) * cos(c.z * n);
-					// 	float newy = pow(c.x, n) * sin(c.y * n) * sin(c.z * n);
-					// 	float newz = pow(c.x, n) * cos(c.z * n);
-
-					// 	zeta.x = newx + c.x;
-					// 	zeta.y = newy + c.y;
-					// 	zeta.z = newz + c.z;
-
-					// 	iteration++;
-
-					// 	if(c.r > 2){
-						// 		break;
-					// 	}
-
-					// 	if(iteration > maxIterations){
-						// 		d += length(c) - .1;
-						// 		break;
-					// 	}
-				// }
 
 				d = Mandelbulb(p);		
 
@@ -202,18 +178,20 @@ Shader "Unlit/Raymarch Mandelbulb"
 				float d = Raymarch(ro, rd);
 
 				//texture
-				fixed4 tex = tex2D(_MainTex, i.uv);
+				//fixed4 tex = tex2D(_MainTex, i.uv);
 
 				fixed4 col = 0;
 				
 				//mask
-				float m = dot(uv, uv);
+				//float m = dot(uv, uv);
 
 				//coloring of hits
 				if(d < MAX_DIST){
 					float3 p = ro + rd * d;
 					float3 n = GetNormal(p);
+
 					col.rgb = n;
+
 					} else {
 					//don't render pixel
 					discard;
