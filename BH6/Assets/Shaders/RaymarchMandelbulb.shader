@@ -2,7 +2,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		//_MainTex ("Texture", 2D) = "white" {}
 
 		//mandelbulb
 		_Exponent ("Exponent", Range(0, 50)) = 1
@@ -14,13 +14,17 @@ Shader "Unlit/Raymarch Mandelbulb"
 		_SurfDist ("Surface Distance", int) = .001
 
 		//color
-		_ColorA ("Color A", Color) = (0,0,0,0)
-		_ColorB ("Color B", Color) = (0,0,0,0)
+		_ColorX ("Color X", Color) = (0,0,0,0)
+		_ColorY ("Color Y", Color) = (0,0,0,0)
+		_ColorZ ("Color Z", Color) = (0,0,0,0)
+
+		//rt adjustments
+		_Speed ("Speed", float) = 1.
 	}
 	
 	SubShader
 	{
-		Tags { "RenderType" = "Opaque" }
+		Tags {"RenderType" = "Opaque" }
 		LOD 100
 
 		Pass
@@ -56,8 +60,11 @@ Shader "Unlit/Raymarch Mandelbulb"
 			int _MaxDist;
 			int _SurfDist;
 
-			float4 _ColorA;
-			float4 _ColorB;
+			float4 _ColorX;
+			float4 _ColorY;
+			float4 _ColorZ;
+
+			float _Speed;
 
 			v2f vert (appdata v)
 			{
@@ -98,8 +105,15 @@ Shader "Unlit/Raymarch Mandelbulb"
 				float3 p = c;
 				float dr = 3, r = 10;
 
-				for(int i = 0; i < _Iterations; i++)
-				{			
+				float se = _Exponent, si = _Iterations;
+
+				//iteration increase/decrease
+				//si = lerp(_Iterations - 1, _Iterations + 1, sin(_Time.y * .5 + .5) * _Speed);
+
+				for(int i = 0; i < si; i++)
+				{		
+					//easing between exponents	
+					se = lerp(_Exponent - .5, _Exponent + .5, sin(_Time.y * _Speed));
 					// equation used: f(p) = p^_Exponent + c starting with p = 0			
 
 					// get polar coordinates of p
@@ -107,12 +121,12 @@ Shader "Unlit/Raymarch Mandelbulb"
 					cartesian_to_polar(p, r, theta, psi);
 
 					// rate of change of points in the set
-					dr = _Exponent * pow(r, _Exponent - 1) * dr + 1.0;
+					dr = se * pow(r, se - 1) * dr + 1.0;
 
 					// find p ^ .5
-					r = pow(r, _Exponent);
-					theta *= _Exponent;
-					psi *= _Exponent;
+					r = pow(r, se);
+					theta *= se;
+					psi *= se;
 
 					// convert to cartesian coordinates
 					polar_to_cartesian(r, theta, psi, p);
@@ -150,9 +164,12 @@ Shader "Unlit/Raymarch Mandelbulb"
 				float d1 = Mandelbulb(p);	
 				float d2 = Sphere(p, .8);
 
+				//add shapes
 				// cd = min(d1, d2);
+
+				//subtract shapes, negative is the 'hollow'
 				cd = max(-d2, d1);
-				
+
 				return cd;
 			}
 
@@ -199,8 +216,8 @@ Shader "Unlit/Raymarch Mandelbulb"
 				//texture
 				//fixed4 tex = tex2D(_MainTex, i.uv);
 
-				fixed4 col = _ColorA;
-			
+				fixed4 col = 0;
+				
 				//mask
 				//float m = dot(uv, uv);
 
@@ -209,8 +226,8 @@ Shader "Unlit/Raymarch Mandelbulb"
 					float3 p = ro + rd * d;
 					float3 n = GetNormal(p);
 
-
-					col.rgb = n * lerp(_ColorA, _ColorB, sin(_Time.y * .5 + .5));
+					//col.rgb = n * .5 + .5;
+					col.rgb = _ColorX * n.x + _ColorY * n.y + _ColorZ * n.z;
 
 					} else {
 					//don't render pixel
@@ -219,7 +236,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 
 				//col = lerp(col, tex, smoothstep(.1, .2, m));
 
-				//col *= lerp(_ColorA, _ColorB, sin(_Time.y * .5 + .5));
+				//col = lerp(_ColorX, _ColorY, sin(_Time.y * .5 + .5) * _Speed);
 
 				return col;
 			}

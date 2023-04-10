@@ -64,28 +64,32 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Exponent: 10
+    - _Exponent: 11
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Gradient: 0
-    - _Iterations: 6
-    - _MaxDist: 10
-    - _MaxSteps: 75
+    - _Iterations: 3
+    - _MaxDist: 20
+    - _MaxSteps: 50
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _Speed: 0.1
     - _SrcBlend: 1
     - _SurfDist: 0.01
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorA: {r: 0.7372549, g: 0.28235295, b: 0.332979, a: 1}
-    - _ColorB: {r: 0.28235295, g: 0.6313726, b: 0.7372549, a: 1}
+    - _ColorA: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorB: {r: 1, g: 1, b: 1, a: 1}
     - _ColorC: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorX: {r: 1, g: 0.87972265, b: 0.4666667, a: 0}
+    - _ColorY: {r: 0.18823528, g: 0.37196088, b: 1, a: 0}
+    - _ColorZ: {r: 1, g: 0, b: 0.17174721, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
