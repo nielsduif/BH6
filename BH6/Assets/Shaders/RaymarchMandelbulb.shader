@@ -5,13 +5,17 @@ Shader "Unlit/Raymarch Mandelbulb"
 		_MainTex ("Texture", 2D) = "white" {}
 
 		//mandelbulb
-		_Exponent ("Exponent", Range(2, 50)) = 1
+		_Exponent ("Exponent", Range(0, 50)) = 1
 		_Iterations ("Iterations", Range(1, 50)) = 50
 
 		//raymarch
 		_MaxSteps ("Max Steps", int) = 100
 		_MaxDist ("Max Distance", int) = 100
 		_SurfDist ("Surface Distance", int) = .001
+
+		//color
+		_ColorA ("Color A", Color) = (0,0,0,0)
+		_ColorB ("Color B", Color) = (0,0,0,0)
 	}
 	
 	SubShader
@@ -52,6 +56,9 @@ Shader "Unlit/Raymarch Mandelbulb"
 			int _MaxDist;
 			int _SurfDist;
 
+			float4 _ColorA;
+			float4 _ColorB;
+
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -72,7 +79,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 			inline void cartesian_to_polar(float3 p, out float r, out float theta, out float psi)
 			{
 				r = length(p);
-				float r1 = p.x*p.x + p.y*p.y;
+				float r1 = p.x * p.x + p.y *  p.y;
 				theta = atan(p.z / r1); // angle vector makes with the XY plane
 				psi	= atan(p.y / p.x); // angle of xy-projected vector with X axis
 			}
@@ -84,7 +91,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 				p.z = r * sin(theta);
 			}
 			
-			float Mandelbulb(float3 c){
+			float Mandelbulb(float3 c){				
 				// i believe that similar to the mandelbrot, the mandelbulb is enclosed in a sphere of radius 2 (hence the delta) 
 				const float delta = 2;	
 				
@@ -138,11 +145,15 @@ Shader "Unlit/Raymarch Mandelbulb"
 
 			//Returns distsance from point p to the scene
 			float GetDist(float3 p){
-				float d;
+				float cd;
 
-				d = Mandelbulb(p);		
+				float d1 = Mandelbulb(p);	
+				float d2 = Sphere(p, .8);
 
-				return d;
+				// cd = min(d1, d2);
+				cd = max(-d2, d1);
+				
+				return cd;
 			}
 
 			//Returns the distance to the scene along depth of the viewing ray
@@ -173,7 +184,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 			fixed4 frag (v2f i) : SV_Target
 			{
 				//pivot
-				float2 uv = i.uv - .5f;
+				float2 uv = i.uv + .5;
 
 				//origin
 				// float3 ro = float3(0, 0, -3);
@@ -188,8 +199,8 @@ Shader "Unlit/Raymarch Mandelbulb"
 				//texture
 				//fixed4 tex = tex2D(_MainTex, i.uv);
 
-				fixed4 col = 0;
-				
+				fixed4 col = _ColorA;
+			
 				//mask
 				//float m = dot(uv, uv);
 
@@ -198,15 +209,17 @@ Shader "Unlit/Raymarch Mandelbulb"
 					float3 p = ro + rd * d;
 					float3 n = GetNormal(p);
 
-					col.rgb = n;
+
+					col.rgb = n * lerp(_ColorA, _ColorB, sin(_Time.y * .5 + .5));
 
 					} else {
 					//don't render pixel
-
 					discard;
 				}
 
-				// col = lerp(col, tex, smoothstep(.1, .2, m));
+				//col = lerp(col, tex, smoothstep(.1, .2, m));
+
+				//col *= lerp(_ColorA, _ColorB, sin(_Time.y * .5 + .5));
 
 				return col;
 			}

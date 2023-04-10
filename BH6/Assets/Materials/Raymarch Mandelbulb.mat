@@ -41,7 +41,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: a9bdcd87ab54b4546a4393aa5f401df5, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -59,16 +59,19 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
+    - _ColorA: 0
+    - _ColorB: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Exponent: 15
+    - _Exponent: 10
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Iterations: 10
-    - _MaxDist: 100
-    - _MaxSteps: 25
+    - _Gradient: 0
+    - _Iterations: 6
+    - _MaxDist: 10
+    - _MaxSteps: 75
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -76,10 +79,13 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SurfDist: 0.1
+    - _SurfDist: 0.01
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorA: {r: 0.7372549, g: 0.28235295, b: 0.332979, a: 1}
+    - _ColorB: {r: 0.28235295, g: 0.6313726, b: 0.7372549, a: 1}
+    - _ColorC: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
