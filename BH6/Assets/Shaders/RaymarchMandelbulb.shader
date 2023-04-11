@@ -19,7 +19,7 @@ Shader "Unlit/Raymarch Mandelbulb"
 		_ColorZ ("Color Z", Color) = (0,0,0,0)
 
 		//rt adjustments
-		_Speed ("Speed", float) = 1.
+		_Speed ("Speed", float) = 1
 	}
 	
 	SubShader
@@ -228,7 +228,6 @@ Shader "Unlit/Raymarch Mandelbulb"
 
 					//col.rgb = n * .5 + .5;
 					col.rgb = _ColorX * n.x + _ColorY * n.y + _ColorZ * n.z;
-
 					} else {
 					//don't render pixel
 					discard;
