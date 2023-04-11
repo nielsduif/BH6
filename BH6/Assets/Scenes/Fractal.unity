@@ -366,15 +366,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb17b07bfc843154ab594f47003fd55f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  childScale: 0.5
+  childScale: 0.7
   maxDepth: 5
-  material: {fileID: 2100000, guid: d69edc363c7c5ab448e53e9285ef0a34, type: 2}
+  material: {fileID: 2100000, guid: a4ccf14c31d6c9847acddc52a9061f0d, type: 2}
   meshes:
   - {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  spawnProb: 0.7
-  maxRotationSpeed: 40
-  maxTwist: 50
+  spawnProb: 0.3
+  maxRotationSpeed: 50
+  maxTwist: 100
 --- !u!1 &1621662089
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,7 +416,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1621662089}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 1e6e4ff34e4d51b4baeddbf1d527b5a8, type: 2}
   m_CullingMode: 0

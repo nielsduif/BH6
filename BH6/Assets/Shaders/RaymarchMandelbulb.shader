@@ -99,11 +99,11 @@ Shader "Unlit/Raymarch Mandelbulb"
 			}
 			
 			float Mandelbulb(float3 c){				
-				// i believe that similar to the mandelbrot, the mandelbulb is enclosed in a sphere of radius 2 (hence the delta) 
+				//radius of inside sphere of the mandelbulb 
 				const float delta = 2;	
 				
 				float3 p = c;
-				float dr = 3, r = 10;
+				float dr = 2, r = 1;
 
 				float se = _Exponent, si = _Iterations;
 
@@ -114,13 +114,12 @@ Shader "Unlit/Raymarch Mandelbulb"
 				{		
 					//easing between exponents	
 					se = lerp(_Exponent - .5, _Exponent + .5, sin(_Time.y * _Speed));
-					// equation used: f(p) = p^_Exponent + c starting with p = 0			
 
-					// get polar coordinates of p
+					// convert cart to polar
 					float theta, psi;
 					cartesian_to_polar(p, r, theta, psi);
 
-					// rate of change of points in the set
+					// rate change of points
 					dr = se * pow(r, se - 1) * dr + 1.0;
 
 					// find p ^ .5
@@ -134,14 +133,14 @@ Shader "Unlit/Raymarch Mandelbulb"
 					// add c
 					p += c;
 
-					// check for divergence
+					// check if point is outside range of mandelbulb
 					if (length(p) > delta) {
 						break;
 					}
 				}
 
-				// return r;
-				return log(r) * r / dr; // Greens formula
+				// Greens method
+				return log(r) * r / dr; 
 			}
 
 			float Sphere(float3 p, float r){
@@ -157,9 +156,9 @@ Shader "Unlit/Raymarch Mandelbulb"
 				return length(float2(length(p.xz) - ic, p.y)) - r;
 			}
 
-			//Returns distsance from point p to the scene
+			//Returns distance from point p to the scene
 			float GetDist(float3 p){
-				float cd;
+				float cd; //combined distance
 
 				float d1 = Mandelbulb(p);	
 				float d2 = Sphere(p, .8);
@@ -226,7 +225,8 @@ Shader "Unlit/Raymarch Mandelbulb"
 					float3 p = ro + rd * d;
 					float3 n = GetNormal(p);
 
-					//col.rgb = n * .5 + .5;
+					//col.rgb = n;
+					// col.rgb = n * .5 + .5;
 					col.rgb = _ColorX * n.x + _ColorY * n.y + _ColorZ * n.z;
 					} else {
 					//don't render pixel

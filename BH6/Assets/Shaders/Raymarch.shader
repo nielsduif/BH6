@@ -56,14 +56,14 @@ Shader "Unlit/Raymarch"
 
             //Returns distsance from point p to the scene
             float GetDist(float3 p){
-                float d;
+                float d1, d2;
                 //sphere
-                d = length(p) - .5; 
+                d1 = length(p) - .5; 
 
                 //torus
-                d = length(float2(length(p.xz) - .5, p.y)) - .1;
+                d2 = length(float2(length(p.xz) - .5, p.y)) - .1;
 
-                return d;
+                return max(-d1, d2);
             }
 
             //Returns the distance to the scene along depth of the viewing ray
@@ -108,12 +108,12 @@ Shader "Unlit/Raymarch"
                 float d = Raymarch(ro, rd);
 
                 //texture
-                fixed4 tex = tex2D(_MainTex, i.uv);
+                //fixed4 tex = tex2D(_MainTex, i.uv);
 
                 fixed4 col = 0;
                 
                 //mask
-                float m = dot(uv, uv);
+                //float m = dot(uv, uv);
 
                 //coloring of hits
                 if(d < MAX_DIST){
@@ -122,10 +122,10 @@ Shader "Unlit/Raymarch"
                     col.rgb = n;
                     }else{
                     //don't render pixel
-                    // discard;
+                    discard;
                 }
 
-                col = lerp(col, tex, smoothstep(.1, .2, m));
+                //col = lerp(col, tex, smoothstep(.1, .2, m));
 
                 return col;
             }
